@@ -1,0 +1,81 @@
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: AktivGroteskStd, sans-serif;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
+#alert_container {
+    height: 100%;
+    width: 100%;
+    background: rgba(30, 30, 30, 0.7);
+    top: 0;
+    left: 0;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-transition: opacity 0.5s;
+    -moz-transition: opacity 0.5s;
+    -ms-transition: opacity 0.5s;
+    -o-transition: opacity 0.5s;
+    transition: opacity 0.5s;
+    z-index: 1000;
+}
+
+#alert_window {
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    background: #E6E3E1;
+}
+
+#alert_title {
+    color: #2B415D;
+    font-weight: 800;
+}
+
+#alert_message {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    color: #666;
+    overflow-x: scroll;
+}
+
+#alert_buttons {
+    text-align: right;
+}
+
+.alert_button {
+    cursor: pointer;
+    padding-left: 10px;
+    -webkit-transition: color 0.5s;
+    -moz-transition: color 0.5s;
+    -ms-transition: color 0.5s;
+    -o-transition: color 0.5s;
+    transition: color 0.5s;
+}
+
+.alert_button:hover {
+    color: #E37954;
+}
+
+.transparent {
+    opacity: 0 !important;
+}
+
+.display_none {
+    display: None !important;
+}
+
+.blurred {
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
+}
