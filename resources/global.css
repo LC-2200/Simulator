@@ -3,6 +3,9 @@ body, html {
     height: 100%;
     margin: 0;
     font-family: AktivGroteskStd, sans-serif;
+    overflow: hidden;
+    background: #262626;
+    color: #fff;
 }
 
 input:focus,
@@ -10,6 +13,207 @@ select:focus,
 textarea:focus,
 button:focus {
     outline: none;
+}
+
+input {
+    background: #262626;
+    border: none;
+    padding: 8px;
+    color: #fff;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+.button {
+    padding: 5px;
+    background: #262626;
+    cursor: pointer;
+    color: cadetblue;
+    text-align: center;
+}
+
+.transparent {
+    opacity: 0;
+}
+
+.hidden {
+    display: None;
+}
+
+.options_button {
+    width: 100%;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+}
+
+.datapath_button {
+    display: inline-block;
+    padding: 5px;
+    background: #262626;
+    cursor: pointer;
+    color: cadetblue;
+    text-align: center;
+    width: 20%;
+    border: 1px solid #444;
+    box-sizing: border-box;
+}
+
+#content {
+    transition: 0.5s;
+}
+
+#welcome {
+    font-family: AktivGroteskLight, sans-serif;
+    font-weight: 100;
+    font-size: 60px;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 15%;
+    color: #888;
+    transform:  translateX(-100%) translateY(-50%);
+    transition: 2s;
+}
+
+#login_box {
+    background: #555;
+    padding: 2px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform:  translateX(-350%) translateY(-50%);
+    transition: 2s;
+}
+
+#button_login {
+    border-top: 1px solid #555;
+}
+
+#button_password {
+    border-left: 1px solid #555;
+}
+
+#password_field {
+    font-family: AktivGroteskStd, sans-serif;
+    width: 300px;
+    font-size: 14px;
+}
+
+#alert_screen {
+    transition: 0.5s;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(50, 50, 50, 0.5);
+    z-index: 100;
+    top: 0;
+    left: 0;
+    transform: translateZ(100px);
+}
+
+#alert_window {
+    left: 50%;
+    top: 50%;
+    min-width: 320px;
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+    background: #555;
+    padding: 2px;
+}
+
+#alert_title {
+    padding: 5px;
+    color: #bbb;
+}
+
+#alert_content {
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+#options_window {
+    position: absolute;
+    padding: 20px;
+    background: #555;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+#logout {
+    padding: 10px;
+    color: cadetblue;
+    cursor: pointer;
+}
+
+#instructions {
+    width: 100%;
+}
+
+#student_content_table {
+    width: 100%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+#datapath {
+    width: 100%;
+    background: #262626;
+    box-sizing: border-box;
+}
+
+#datapath_img {
+    margin-top: 20px;
+    width: 100%;
+    -webkit-filter: hue-rotate(100deg);
+}
+
+#editor_container {
+    width: 200px;
+    height: 100%;
+}
+
+.CodeMirror.cm-s-base16-dark {
+    height: 100% !important;
+}
+
+.highlight {
+    height: 15px;
+    background: rgba(100, 100, 100, 0.5);
+    position: absolute;
+    z-index: 1000;
+}
+
+#highlight_1 {
+    width: 198px;
+    left: 1px;
+    top: 5px;
+}
+
+#highlight_2 {
+    width: 241px;
+    right: 1px;
+    top: 377px;
+}
+
+#registers {
+    width: 241px;
+    height: 100%;
+    background: #262626;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    font-family: monospace;
 }
 
 #alert_container {
