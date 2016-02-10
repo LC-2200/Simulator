@@ -1,5 +1,6 @@
 var alert_open = false;
 var logged_in = false;
+var memory;
 
 function on_load() {
     select("id","welcome").js_object.style.transform = "translateX(0%) translateY(-50%)";
@@ -38,6 +39,24 @@ function student_scripts() {
     select("id","load").js_object.addEventListener("click", function(e) {
         datapath_on_load_click(e, editor);
     });
+
+    memory = [];
+    var memory_size = 65536;
+    var memory_div = select("id", "memory").js_object;
+    for (var i = 0; i < memory_size; i++) {
+        memory[i] = document.createElement("div");
+        memory[i].class = "memory_item";
+        var location = document.createElement("span");
+        location.class = "memory_item_location";
+        location.innerHTML = ("0000" + i.toString(16)).substr(-4, 4) + ": ";
+        var value = document.createElement("span");
+        value.class = "memory_item_input";
+        memory[i].value = value;
+        memory[i].value.innerHTML = "0000 0000";
+        memory[i].appendChild(location);
+        memory[i].appendChild(value);
+        memory_div.appendChild(memory[i]);
+    }
 }
 
 function login() {
