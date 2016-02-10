@@ -269,7 +269,7 @@ function activate_datapath_element(elem) {
 }
 
 function reset_datapath_element(elem) {
-    set_datapath_element_color(elem, 'rgb(255,255,255');
+    set_datapath_element_color(elem, 'rgb(255,255,255)');
 }
 
 function set_datapath_element_color(elem, color) {
