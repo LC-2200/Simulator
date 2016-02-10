@@ -16,8 +16,8 @@ var datapath = {
     drOff: 0,
     drPC: 1,
     drALU: 0,
-    ALUSel: 0,
-    regSel: 0,
+    func: 0,
+    regno: 0,
     opTest: 0,
     chkZ: 0,
     IR: 0x00000000,
@@ -68,7 +68,7 @@ const MICROCODE = [["FETCH0",1,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0],
                    ["HALT",29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
 
 const OP_TABLE = [3,6,9,12,16,20,27,29];
-const Z_TABLE = [0,23]
+const Z_TABLE = [0,23];
 
 function datapath_on_forward_microstate_click(e, editor) {
 
@@ -97,13 +97,13 @@ function datapath_on_forward_microstate_click(e, editor) {
     datapath.wrReg = nextState[13];
     datapath.wrMem = nextState[14];
     if (nextState[15] == 0) {
-        datapath.regSel = datapath.IR << 4 >>> 28;
+        datapath.regno = datapath.IR << 4 >>> 28;
     } else if (nextState[15] == 1) {
-        datapath.regSel = datapath.IR << 8 >>> 28;
+        datapath.regno = datapath.IR << 8 >>> 28;
     } else {
-        datapath.regSel = datapath | 0xF;
+        datapath.regno = datapath | 0xF;
     }
-    datapath.ALUSel = nextState[16];
+    datapath.func = nextState[16];
     datapath.opTest = nextState[17];
     datapath.chkZ = nextState[18];
 
@@ -111,17 +111,17 @@ function datapath_on_forward_microstate_click(e, editor) {
     if (datapath.drPC == 1) {
         datapath.bus = datapath.PC;
     } else if (datapath.drALU == 1) {
-        if (datapath.ALUSel == 0) {
+        if (datapath.func == 0) {
             datapath.bus = datapath.A + datapath.B;
-        } else if (datapath.ALUSel == 1) {
+        } else if (datapath.func == 1) {
             datapath.bus = ~(datapath.A  & datapath.B);
-        } else if (datapath.ALUSel == 2) {
+        } else if (datapath.func == 2) {
             datapath.bus = datapath.A  - datapath.B;
-        } else if (datapath.ALUSel == 3) {
+        } else if (datapath.func == 3) {
             datapath.bus = datapath.A  + 1;
         }
     } else if (datapath.drReg == 1) {
-        datapath.bus = datapath.registers[datapath.regSel];
+        datapath.bus = datapath.registers[datapath.regno];
     } else if (datapath.drMem == 1) {
         datapath.bus = datapath.mem[datapath.MAR];
     } else if (datapath.drOff == 1) {
@@ -148,8 +148,7 @@ function datapath_on_forward_microstate_click(e, editor) {
         datapath.A = datapath.bus == 0 ? 1 : 0;
     }
     if (datapath.wrReg == 1) {
-        alert(datapath.regSel + " : " + datapath.bus);
-        datapath.registers[datapath.regSel] = datapath.bus;
+        datapath.registers[datapath.regno] = datapath.bus;
     }
     if (datapath.wrMem == 1) {
         datapath.mem[datapath.MAR] = datapath.bus;
@@ -185,12 +184,98 @@ function update_datapath_ui() {
     for (var i = 0; i < 16; i++) {
         select("id", "datapath_register_" + i + "_value").js_object.innerHTML = datapath.registers[i];
     }
-    select("id", "datapath_regsel_value").js_object.innerHTML = datapath.regSel;
-    select("id", "datapath_alusel_value").js_object.innerHTML = datapath.ALUSel;
+    select("id", "datapath_regsel_value").js_object.innerHTML = datapath.regno;
+    select("id", "datapath_alusel_value").js_object.innerHTML = datapath.func;
     select("id", "datapath_pc_value").js_object.innerHTML = datapath.PC;
     select("id", "datapath_ir_value").js_object.innerHTML = datapath.IR;
     select("id", "datapath_a_value").js_object.innerHTML = datapath.A;
     select("id", "datapath_b_value").js_object.innerHTML = datapath.B;
     select("id", "datapath_mar_value").js_object.innerHTML = datapath.MAR;
 
+    if(datapath.bus != 0) {
+        activate_datapath_element("bus");
+    } else {
+        reset_datapath_element("bus");
+    }
+    if(datapath.ldA != 0) {
+        activate_datapath_element("ldA");
+    } else {
+        reset_datapath_element("ldA");
+    }
+    if(datapath.ldB != 0) {
+        activate_datapath_element("ldB");
+    } else {
+        reset_datapath_element("ldB");
+    }
+    if(datapath.ldIR != 0) {
+        activate_datapath_element("ldIr");
+    } else {
+        reset_datapath_element("ldIr");
+    }
+    if(datapath.ldMAR != 0) {
+        activate_datapath_element("ldMar");
+    } else {
+        reset_datapath_element("ldMar");
+    }
+    if(datapath.ldPC != 0) {
+        activate_datapath_element("ldPc");
+    } else {
+        reset_datapath_element("ldPc");
+    }
+    if(datapath.ldZ != 0) {
+        activate_datapath_element("ldZ");
+    } else {
+        reset_datapath_element("ldZ");
+    }
+    if(datapath.wrReg != 0) {
+        activate_datapath_element("wrReg");
+    } else {
+        reset_datapath_element("wrReg");
+    }
+    if(datapath.wrMem != 0) {
+        activate_datapath_element("wrMem");
+    } else {
+        reset_datapath_element("wrMem");
+    }
+    if(datapath.drOff != 0) {
+        activate_datapath_element("drOff");
+    } else {
+        reset_datapath_element("drOff");
+    }
+    if(datapath.drPC != 0) {
+        activate_datapath_element("drPc");
+    } else {
+        reset_datapath_element("drPc");
+    }
+    if(datapath.drALU != 0) {
+        activate_datapath_element("drAlu");
+    } else {
+        reset_datapath_element("drAlu");
+    }
+    if(datapath.func != 0) {
+        activate_datapath_element("func");
+    } else {
+        reset_datapath_element("func");
+    }
+    if(datapath.regno != 0) {
+        activate_datapath_element("regno");
+    } else {
+        reset_datapath_element("regno");
+    }
+}
+
+function activate_datapath_element(elem) {
+    set_datapath_element_color(elem, 'rgb(170,0,0)');
+}
+
+function reset_datapath_element(elem) {
+    set_datapath_element_color(elem, 'rgb(255,255,255');
+}
+
+function set_datapath_element_color(elem, color) {
+    var datapath_svg = document.getElementById("datapath_svg");
+    console.log(elem);
+    var element = datapath_svg.getElementById(elem);
+    element.setAttribute("stroke", color);
+    element.setAttribute("fill", color);
 }
