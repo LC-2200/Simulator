@@ -247,6 +247,11 @@ function update_datapath_ui() {
     } else {
         reset_datapath_element("drPc");
     }
+    if(datapath.drReg != 0) {
+        activate_datapath_element("drReg");
+    } else {
+        reset_datapath_element("drReg");
+    }
     if(datapath.drALU != 0) {
         activate_datapath_element("drAlu");
     } else {

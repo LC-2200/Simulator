@@ -41,7 +41,7 @@ function student_scripts() {
     });
 
     memory = [];
-    var memory_size = 65536;
+    var memory_size = 1024;
     var memory_div = select("id", "memory").js_object;
     for (var i = 0; i < memory_size; i++) {
         memory[i] = document.createElement("div");
