@@ -1,6 +1,6 @@
 var alert_open = false;
 var logged_in = false;
-var memory;
+var memory_list;
 
 function on_load() {
     select("id","welcome").js_object.style.transform = "translateX(0%) translateY(-50%)";
@@ -40,15 +40,31 @@ function student_scripts() {
         datapath_on_load_click(e, editor);
     });
 
-    memory = [];
-    var memory_size = 1024;
+     memory_list = new VirtualList({
+        w: 200,
+        h: 400,
+        itemHeight: 15,
+        totalRows: 65536,
+        generatorFn: function(row) {
+            var elem = document.createElement("div");
+            elem.innerHTML = ("0000" + row.toString(16)).toUpperCase().substr(-4, 4) + ": " + get_mem_value(row);
+            elem.class = "memory_item";
+            elem.style.position = "absolute";
+            return elem;
+        }
+    });
+    select("id", "memory").js_object.appendChild(memory_list.container);
+
+
+    /*memory = [];
+    var memory_size = 32;
     var memory_div = select("id", "memory").js_object;
     for (var i = 0; i < memory_size; i++) {
         memory[i] = document.createElement("div");
         memory[i].class = "memory_item";
         var location = document.createElement("span");
         location.class = "memory_item_location";
-        location.innerHTML = ("0000" + i.toString(16)).substr(-4, 4) + ": ";
+        location.innerHTML = ("0000" + i.toString(16)).toUpperCase().substr(-4, 4) + ": ";
         var value = document.createElement("span");
         value.class = "memory_item_input";
         memory[i].value = value;
@@ -56,7 +72,7 @@ function student_scripts() {
         memory[i].appendChild(location);
         memory[i].appendChild(value);
         memory_div.appendChild(memory[i]);
-    }
+    }*/
 }
 
 function login() {

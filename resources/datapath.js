@@ -9,8 +9,8 @@ var datapath = {
     B: 0x00000000,
     PC: 0x00000000,
     Z: 0,
-    registers: Array.apply(null, Array(16)).map(Number.prototype.valueOf,0),
-    mem: Array.apply(null, Array(1024)).map(Number.prototype.valueOf,0)
+    registers: Array.apply(null, new Array(16)).map(Number.prototype.valueOf,0),
+    mem: Array.apply(null, new Array(65536)).map(Number.prototype.valueOf,0)
 };
 
 const MICROCODE = [["FETCH0", 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -79,9 +79,13 @@ function reset_datapath() {
     datapath.func = 0;
     datapath.IR = 0;
     datapath.MAR = 0;
-    datapath.mem = Array.apply(null, Array(1024)).map(Number.prototype.valueOf,0);
+    for (var i = 0; i < datapath.mem.length; i++) {
+        datapath.mem[i] = 0;
+    }
     datapath.PC = 0;
-    datapath.registers = Array.apply(null, Array(16)).map(Number.prototype.valueOf,0);
+    for (var i = 0; i < datapath.registers.length; i++) {
+        datapath.registers[i] = 0;
+    }
     datapath.regno = 0;
     datapath.state = 0;
     datapath.Z = 0;
@@ -90,8 +94,8 @@ function reset_datapath() {
 
 // FIX ME!
 function next_state() {
-    return datapath.opTest == 1 ? OP_TABLE[datapath.IR >>> 28]
-        : datapath.chkZ == 1 ? Z_TABLE[datapath.Z]
+    return current_state[LOOKUP.opTest] == 1 ? OP_TABLE[datapath.IR >>> 28]
+        : current_state[LOOKUP.opTest] == 1 ? Z_TABLE[datapath.Z]
         : MICROCODE[datapath.state][1];
 }
 
@@ -118,7 +122,7 @@ function update_bus() {
             datapath.bus = ((datapath.A | 0) + 1);
         }
     } else if (current_state[LOOKUP.drMem] == 1) {
-        datapath.bus = datapath.mem[datapath.MAR];
+        datapath.bus = datapath.mem[datapath.MAR & 0xFFFF];
     } else if (current_state[LOOKUP.drOff] == 1) {
         datapath.bus = datapath.IR << 12 >> 12; // Offset is bottom 20 bits.
     } else if (current_state[LOOKUP.drPc] == 1) {
@@ -152,14 +156,15 @@ function update_state_registers() {
 }
 
 function update_register_file() {
-    if (current_state[LOOKUP.wrReg] == 1) {
+    if ((current_state[LOOKUP.wrReg] == 1) && (datapath.regno != 0)) {
         datapath.registers[datapath.regno] = datapath.bus;
     }
 }
 
 function update_memory() {
     if (current_state[LOOKUP.wrMem] == 1) {
-        datapath.mem[datapath.MAR] = datapath.bus;
+        datapath.mem[datapath.MAR & 0xFFFF] = datapath.bus;
+        update_mem_view(datapath.MAR & 0xFFFF);
     }
 }
 
@@ -180,7 +185,7 @@ function update_state() {
     update_register_file();
 
     // Write to memory
-    update_memory()
+    update_memory();
 }
 
 
@@ -254,7 +259,10 @@ function update_datapath_ui() {
     select("id", "datapath_b_value").js_object.textContent = to_hex(datapath.B);
     select("id", "datapath_mar_value").js_object.textContent = to_hex(datapath.MAR);
     select("id", "datapath_current_instruction_name").js_object.textContent = current_state[LOOKUP.name];
+}
 
+function get_mem_value(addr) {
+    return to_hex(datapath.mem[addr]);
 }
 
 function set_datapath_element(elem, activate) {
@@ -269,5 +277,10 @@ function set_datapath_element_color(elem, color) {
 }
 
 function to_hex(val) {
-    return "0x" + ("00000000" + (val | 0).toString(16).toUpperCase()).substr(-16);
+    return "0x" + ("00000000" + val.toString(16)).toUpperCase().substr(-8, 8);
+}
+
+function update_mem_view(index) {
+    memory_list.container.scrollTop = (memory_list.container.scrollHeight / datapath.mem.length) * (index - 5);
+    memory_list._renderChunk(memory_list.container, index - 15);
 }

@@ -207,21 +207,22 @@ a {
 }
 
 #registers {
-    width: 241px;
+    width: 240px;
     height: 50%;
     background: #262626;
     padding-left: 15px;
     padding-right: 15px;
     box-sizing: border-box;
     font-family: monospace;
-    overflow: scroll;
+    overflow: auto;
     border-bottom: 1px solid #555;
 }
 
 #memory {
     height: 50%;
     width: 100%;
-    overflow: scroll;
+    /* Fix maybe? */
+    overflow: hidden;
     font-family: monospace;
 }
 
