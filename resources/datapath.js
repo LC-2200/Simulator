@@ -103,10 +103,13 @@ function update_selectors() {
     datapath.func = current_state[LOOKUP.func];
     if (current_state[LOOKUP.regSel] == 0) {
         datapath.regno = datapath.IR << 4 >>> 28; // Rx is bits 27 - 24.
+        console.log("RX: " + datapath.regno);
     } else if (current_state[LOOKUP.regSel] == 1) {
         datapath.regno = datapath.IR << 8 >>> 28; // Ry is bits 23 - 20.
+        console.log("RY: " + datapath.regno);
     } else {
         datapath.regno = datapath | 0xF; // Rz is bits 3 - 0.
+        console.log("RZ: " + datapath.regno);
     }
 }
 
@@ -277,10 +280,33 @@ function set_datapath_element_color(elem, color) {
 }
 
 function to_hex(val) {
-    return "0x" + ("00000000" + val.toString(16)).toUpperCase().substr(-8, 8);
+    if (val == null) {
+        return "0xXXXXXXXX";
+    } else {
+        if (val < 0) {
+            val = 0x100000000 + val;
+        }
+        return "0x" + ("00000000" + val.toString(16)).toUpperCase().substr(-8, 8);
+    }
 }
 
 function update_mem_view(index) {
     memory_list.container.scrollTop = (memory_list.container.scrollHeight / datapath.mem.length) * (index - 5);
-    memory_list._renderChunk(memory_list.container, index - 15);
+    memory_list._renderChunk(memory_list.container, (index - 15) < 0 ? 0 : index - 15);
+}
+
+function set_memory_s_file(start, text) {
+    var split = text.split(" ");
+    var nums = [];
+    for (var i = 0; i < split.length; i++) {
+        nums[i] = parseInt(split[i], 16);
+    }
+    set_memory(start, nums);
+}
+
+function set_memory(start, values) {
+    for(var i = 0; i < values.length; i++) {
+        datapath.mem[start + i] = values[i];
+    }
+    update_mem_view(start);
 }
