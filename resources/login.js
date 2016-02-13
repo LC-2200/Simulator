@@ -41,7 +41,6 @@ function student_scripts() {
     });
 
      memory_list = new VirtualList({
-        w: 200,
         h: 400,
         itemHeight: 15,
         totalRows: 65536,
