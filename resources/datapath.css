@@ -1,0 +1,33 @@
+#datapath {
+    width: 100%;
+    background: #262626;
+    box-sizing: border-box;
+}
+
+#datapath_img {
+    margin-top: 20px;
+    width: 100%;
+    -webkit-filter: hue-rotate(100deg);
+}
+
+.datapath_button {
+    display: inline-block;
+    padding: 5px;
+    background: #262626;
+    cursor: pointer;
+    color: cadetblue;
+    text-align: center;
+    width: 20%;
+    border: 1px solid #444;
+    box-sizing: border-box;
+}
+
+#datapath_on_load_click_input {
+    width: 100%;
+    border: none;
+    color: #fff;
+    background: #333;
+    resize: none;
+    font-family: monospace;
+    height: 40px;
+}

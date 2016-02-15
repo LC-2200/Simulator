@@ -49,18 +49,6 @@ a {
     box-sizing: border-box;
 }
 
-.datapath_button {
-    display: inline-block;
-    padding: 5px;
-    background: #262626;
-    cursor: pointer;
-    color: cadetblue;
-    text-align: center;
-    width: 20%;
-    border: 1px solid #444;
-    box-sizing: border-box;
-}
-
 #content {
     transition: 0.5s;
 }
@@ -166,18 +154,6 @@ a {
     border-collapse: collapse;
 }
 
-#datapath {
-    width: 100%;
-    background: #262626;
-    box-sizing: border-box;
-}
-
-#datapath_img {
-    margin-top: 20px;
-    width: 100%;
-    -webkit-filter: hue-rotate(100deg);
-}
-
 #editor_container {
     width: 200px;
     height: 100%;
@@ -273,6 +249,7 @@ a {
 
 .alert_button {
     cursor: pointer;
+    color: #000;
     padding-left: 10px;
     -webkit-transition: color 0.5s;
     -moz-transition: color 0.5s;

@@ -226,7 +226,12 @@ function datapath_on_forward_click_timeout(e, editor) {
 }
 
 function datapath_on_load_click(e, editor) {
-    // todo
+    var input_contents = document.createElement("textarea");
+    input_contents.id = "datapath_on_load_click_input";
+    alert(input_contents.outerHTML, "Enter memory contents", "load", true, function() {
+        var input = select("id", "datapath_on_load_click_input").js_object.value;
+        console.log(input);
+    })
 }
 
 function update_datapath_ui() {
