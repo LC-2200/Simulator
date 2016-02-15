@@ -103,13 +103,10 @@ function update_selectors() {
     datapath.func = current_state[LOOKUP.func];
     if (current_state[LOOKUP.regSel] == 0) {
         datapath.regno = datapath.IR << 4 >>> 28; // Rx is bits 27 - 24.
-        console.log("RX: " + datapath.regno);
     } else if (current_state[LOOKUP.regSel] == 1) {
         datapath.regno = datapath.IR << 8 >>> 28; // Ry is bits 23 - 20.
-        console.log("RY: " + datapath.regno);
     } else {
         datapath.regno = datapath.IR & 0xF; // Rz is bits 3 - 0.
-        console.log("RZ: " + datapath.regno);
     }
 }
 
