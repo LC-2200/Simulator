@@ -67,7 +67,7 @@ const LOOKUP = {
 };
 
 const OP_TABLE = [3,6,9,12,16,20,27,29];
-const Z_TABLE = [0,23];
+const Z_TABLE = [0,24];
 
 var current_state = MICROCODE[0];
 
@@ -95,7 +95,7 @@ function reset_datapath() {
 // FIX ME!
 function next_state() {
     return current_state[LOOKUP.opTest] == 1 ? OP_TABLE[datapath.IR >>> 28]
-        : current_state[LOOKUP.opTest] == 1 ? Z_TABLE[datapath.Z]
+        : current_state[LOOKUP.chkZ] == 1 ? Z_TABLE[datapath.Z]
         : MICROCODE[datapath.state][1];
 }
 
@@ -108,7 +108,7 @@ function update_selectors() {
         datapath.regno = datapath.IR << 8 >>> 28; // Ry is bits 23 - 20.
         console.log("RY: " + datapath.regno);
     } else {
-        datapath.regno = datapath | 0xF; // Rz is bits 3 - 0.
+        datapath.regno = datapath.IR & 0xF; // Rz is bits 3 - 0.
         console.log("RZ: " + datapath.regno);
     }
 }
@@ -154,7 +154,7 @@ function update_state_registers() {
         datapath.PC = datapath.bus;
     }
     if (current_state[LOOKUP.ldZ] == 1) {
-        datapath.Z = datapath.bus;
+        datapath.Z = datapath.bus == 0 ? 1 : 0;
     }
 }
 
@@ -193,8 +193,10 @@ function update_state() {
 
 
 function datapath_on_forward_microstate_click(e, editor) {
-    update_state();
-    update_datapath_ui();
+    if (!disable_stepping) {
+        update_state();
+        update_datapath_ui();
+    }
 }
 
 function datapath_on_back_microstate_click(e, editor) {
@@ -205,14 +207,24 @@ function datapath_on_back_click(e, editor) {
     // todo
 }
 
+var disable_stepping = false;
+
 function datapath_on_forward_click(e, editor) {
-    if (datapath.state == 0) {
+    if (!disable_stepping) {
+        disable_stepping = true;
         update_state();
         update_datapath_ui();
+        setTimeout(datapath_on_forward_click_timeout, 500);
     }
-    while (datapath.state != 0) {
-        setTimeout(update_state, 500);
+}
+
+function datapath_on_forward_click_timeout(e, editor) {
+    if (datapath.state != 0) {
+        update_state();
         update_datapath_ui();
+        setTimeout(datapath_on_forward_click_timeout, 500);
+    } else {
+        disable_stepping = false;
     }
 }
 
