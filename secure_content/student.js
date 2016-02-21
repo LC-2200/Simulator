@@ -324,3 +324,49 @@ function set_memory(start, values) {
     }
     update_mem_view(start);
 }
+
+function on_student_load() {
+    var editor = CodeMirror.fromTextArea(select("id","editor").js_object, {
+        lineNumbers: true,
+        width: 300,
+        theme: "lesser-dark"
+    });
+
+    select("id","forward_microstate").js_object.addEventListener("click", function(e) {
+        datapath_on_forward_microstate_click(e, editor);
+    });
+
+    select("id","back_microstate").js_object.addEventListener("click", function(e) {
+        datapath_on_back_microstate_click(e, editor);
+    });
+
+    select("id","back_instruction").js_object.addEventListener("click", function(e) {
+        datapath_on_back_click(e, editor);
+    });
+
+    select("id","forward_instruction").js_object.addEventListener("click", function(e) {
+        datapath_on_forward_click(e, editor);
+    });
+
+    select("id","load").js_object.addEventListener("click", function(e) {
+        datapath_on_load_click(e, editor);
+    });
+
+    memory_list = new VirtualList({
+        h: 400,
+        itemHeight: 15,
+        totalRows: 65536,
+        generatorFn: function(row) {
+            var elem = document.createElement("div");
+            elem.innerHTML = ("0000" + row.toString(16)).toUpperCase().substr(-4, 4) + ": " + get_mem_value(row);
+            elem.class = "memory_item";
+            elem.style.position = "absolute";
+            return elem;
+        }
+    });
+    select("id", "memory").js_object.appendChild(memory_list.container);
+}
+
+setTimeout(function() {
+    on_student_load();
+}, 1000);
