@@ -3,7 +3,3 @@ function on_instructor_load() {
         alert("Options saved.");
     });
 }
-
-setTimeout(function() {
-    on_instructor_load();
-}, 1000);

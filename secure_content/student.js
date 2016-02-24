@@ -345,7 +345,3 @@ function on_student_load() {
     });
     select("id", "memory").js_object.appendChild(memory_list.container);
 }
-
-setTimeout(function() {
-    on_student_load();
-}, 1000);

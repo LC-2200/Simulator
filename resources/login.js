@@ -16,11 +16,17 @@ function login() {
             return;
         }
 
-        load_content(result.html);
+        load_content(result.html, function() {
+            var datapath_scripts = document.createElement("script");
+            datapath_scripts.innerHTML = result.javascript;
+            document.head.appendChild(datapath_scripts);
 
-        var datapath_scripts = document.createElement("script");
-        datapath_scripts.innerHTML = result.javascript;
-        document.head.appendChild(datapath_scripts);
+            if (result.status == "student") {
+                on_student_load();
+            } else {
+                on_instructor_load();
+            }
+        });
     });
 }
 
@@ -40,12 +46,13 @@ document.addEventListener("keypress", function(e) {
     }
 });
 
-function load_content(content) {
+function load_content(content, callback) {
     var container = select("id","content").js_object;
     container.setAttribute("class", "transparent");
     setTimeout(function() {
         container.innerHTML = content;
         container.setAttribute("class", "");
+        callback();
     }, 500);
 }
 
