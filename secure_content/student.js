@@ -83,7 +83,7 @@ function reset_datapath() {
         datapath.mem[i] = 0;
     }
     datapath.PC = 0;
-    for (var i = 0; i < datapath.registers.length; i++) {
+    for (i = 0; i < datapath.registers.length; i++) {
         datapath.registers[i] = 0;
     }
     datapath.regno = 0;
@@ -236,37 +236,16 @@ function datapath_on_load_click(e, editor) {
 
 function update_datapath_ui() {
     set_datapath_element("bus", !(datapath.bus === null));
-    set_datapath_element("drAlu", current_state[LOOKUP.drAlu] == 1);
-    set_datapath_element("drMem", current_state[LOOKUP.drMem] == 1);
-    set_datapath_element("drOff", current_state[LOOKUP.drOff] == 1);
-    set_datapath_element("drPc", current_state[LOOKUP.drPc] == 1);
-    set_datapath_element("drReg", current_state[LOOKUP.drReg] == 1);
-    set_datapath_element("ldA", current_state[LOOKUP.ldA] == 1);
-    set_datapath_element("ldB", current_state[LOOKUP.ldB] == 1);
-    set_datapath_element("ldIr", current_state[LOOKUP.ldIr] == 1);
-    set_datapath_element("ldMar", current_state[LOOKUP.ldMar] == 1);
-    set_datapath_element("ldPc", current_state[LOOKUP.ldPc] == 1);
-    set_datapath_element("ldZ", current_state[LOOKUP.ldZ] == 1);
-    set_datapath_element("wrReg", current_state[LOOKUP.wrReg] == 1);
-    set_datapath_element("wrMem", current_state[LOOKUP.wrMem] == 1);
+    var datapath_elements = ["drAlu", "drMem", "drOff", "drPc", "drReg", "ldA",
+        "ldB", "ldIr", "ldMar", "ldPc", "ldZ", "wrReg", "wrMem"];
+    for (var i = 0; i < datapath_elements.length; i++) {
+        set_datapath_element(datapath_elements[i], current_state[LOOKUP[datapath_elements[i]]] == 1);
+    }
 
+    for (i = 0; i < 16; i++) {
+        select("id", "datapath_register_" + i + "_value").js_object.textContent = to_hex(datapath.registers[i]);
+    }
 
-    select("id", "datapath_register_0_value").js_object.textContent = to_hex(datapath.registers[0]);
-    select("id", "datapath_register_1_value").js_object.textContent = to_hex(datapath.registers[1]);
-    select("id", "datapath_register_2_value").js_object.textContent = to_hex(datapath.registers[2]);
-    select("id", "datapath_register_3_value").js_object.textContent = to_hex(datapath.registers[3]);
-    select("id", "datapath_register_4_value").js_object.textContent = to_hex(datapath.registers[4]);
-    select("id", "datapath_register_5_value").js_object.textContent = to_hex(datapath.registers[5]);
-    select("id", "datapath_register_6_value").js_object.textContent = to_hex(datapath.registers[6]);
-    select("id", "datapath_register_7_value").js_object.textContent = to_hex(datapath.registers[7]);
-    select("id", "datapath_register_8_value").js_object.textContent = to_hex(datapath.registers[8]);
-    select("id", "datapath_register_9_value").js_object.textContent = to_hex(datapath.registers[9]);
-    select("id", "datapath_register_10_value").js_object.textContent = to_hex(datapath.registers[10]);
-    select("id", "datapath_register_11_value").js_object.textContent = to_hex(datapath.registers[11]);
-    select("id", "datapath_register_12_value").js_object.textContent = to_hex(datapath.registers[12]);
-    select("id", "datapath_register_13_value").js_object.textContent = to_hex(datapath.registers[13]);
-    select("id", "datapath_register_14_value").js_object.textContent = to_hex(datapath.registers[14]);
-    select("id", "datapath_register_15_value").js_object.textContent = to_hex(datapath.registers[15]);
     select("id", "datapath_bus_value").js_object.textContent = to_hex(datapath.bus);
     select("id", "datapath_regno_value").js_object.textContent = to_hex(datapath.regno);
     select("id", "datapath_func_value").js_object.textContent = to_hex(datapath.func);
