@@ -2,12 +2,43 @@
     width: 100%;
     background: #262626;
     box-sizing: border-box;
+    position: fixed;
+    height: 100%;
+    padding-left: 200px;
+    padding-right: 200px;
+    top: 0;
+    left: 0;
 }
 
-#datapath_img {
-    margin-top: 20px;
-    width: 100%;
-    -webkit-filter: hue-rotate(100deg);
+#registers {
+    background: #262626;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    font-family: monospace;
+    overflow: auto;
+    border-bottom: 1px solid #555;
+    width: 200px;
+    height: 70%;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+
+#memory {
+    overflow: hidden;
+    font-family: monospace;
+    width: 200px;
+    height: 30%;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
+#editor_container {
+    width: 200px;
+    position: fixed;
+    left: 0;
+    top: 0;
 }
 
 .datapath_button {

@@ -154,11 +154,6 @@ a {
     border-collapse: collapse;
 }
 
-#editor_container {
-    width: 200px;
-    height: 100%;
-}
-
 .CodeMirror.cm-s-base16-dark {
     height: 100% !important;
 }
@@ -180,26 +175,6 @@ a {
     width: 241px;
     right: 1px;
     top: 377px;
-}
-
-#registers {
-    width: 240px;
-    height: 50%;
-    background: #262626;
-    padding-left: 15px;
-    padding-right: 15px;
-    box-sizing: border-box;
-    font-family: monospace;
-    overflow: auto;
-    border-bottom: 1px solid #555;
-}
-
-#memory {
-    height: 50%;
-    width: 100%;
-    /* Fix maybe? */
-    overflow: hidden;
-    font-family: monospace;
 }
 
 .memory_item_input {
