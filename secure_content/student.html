@@ -3,8 +3,26 @@
     <textarea id="editor" title="editor"></textarea>
 </div>
 <div id="datapath">
-    <span class="datapath_button" id="back_microstate">back by microstate</span><span class="datapath_button" id="forward_microstate">forward by microstate</span><span class="datapath_button" id="back_instruction">back by instruction</span><span class="datapath_button" id="forward_instruction">forward by instruction</span><span class="datapath_button" id="load">load</span>
-    <svg id="datapath_svg" width="100%" viewBox="-25 -25 1325 930" xmlns="http://www.w3.org/2000/svg" style="display: block;margin: auto;">
+    <table id="datapath_buttons">
+        <tr>
+            <td>
+                <div class="datapath_button" id="back_microstate"></div>
+            </td>
+            <td>
+                <div class="datapath_button" id="forward_microstate"></div>
+            </td>
+            <td>
+                <div class="datapath_button" id="back_instruction"></div>
+            </td>
+            <td>
+                <div class="datapath_button" id="forward_instruction"></div>
+            </td>
+            <td>
+                <div class="datapath_button" id="load"></div>
+            </td>
+        </tr>
+    </table>
+    <svg id="datapath_svg" width="100%" viewBox="-25 -25 1325 930" xmlns="http://www.w3.org/2000/svg">
         <g>
             <title id="tooltip">datapath</title>
             <g id="bus" stroke="#FFFFFF" fill="#FFFFFF" stroke-width="5">
@@ -242,10 +260,5 @@
     MAR: <span id="datapath_mar_value"></span><br>
     <br>
     Current Instruction: <span id="datapath_current_instruction_name"></span><br>
-    ADD0<br>
-    ADD1<br>
-    ADD2<br>
 </div>
 <div id="memory"></div>
-<div class="highlight" id="highlight_1"></div>
-<div class="highlight" id="highlight_2"></div>
