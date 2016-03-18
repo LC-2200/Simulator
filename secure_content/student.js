@@ -13,6 +13,8 @@ var datapath = {
     mem: Array.apply(null, new Array(65536)).map(Number.prototype.valueOf,0)
 };
 
+var stack = [];
+
 const MICROCODE = [["FETCH0", 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
                    ["FETCH1", 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                    ["FETCH2", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 1, 0],
@@ -89,6 +91,7 @@ function reset_datapath() {
     datapath.regno = 0;
     datapath.state = 0;
     datapath.Z = 0;
+    stack = [];
 }
 
 
@@ -157,12 +160,20 @@ function update_state_registers() {
 
 function update_register_file() {
     if ((current_state[LOOKUP.wrReg] == 1) && (datapath.regno != 0)) {
+        // Save old register value to current saved state before we update.
+        stack[0].reg_changed = datapath.regno;
+        stack[0].reg_old_value = datapath.registers[datapath.regno];
+
         datapath.registers[datapath.regno] = datapath.bus;
     }
 }
 
 function update_memory() {
     if (current_state[LOOKUP.wrMem] == 1) {
+        // Save old value to current saved state before we update.
+        stack[0].mem_changed = (datapath.MAR & 0xFFFF);
+        stack[0].mem_old_value = datapath.mem[datapath.MAR & 0xFFFF];
+
         datapath.mem[datapath.MAR & 0xFFFF] = datapath.bus;
         update_mem_view(datapath.MAR & 0xFFFF);
     }
@@ -188,20 +199,84 @@ function update_state() {
     update_memory();
 }
 
+function save_state_to_stack() {
+    var curr = {};
+    curr.state = datapath.state;
+    curr.regno = datapath.regno;
+    curr.func = datapath.func;
+    curr.bus = datapath.bus;
+    curr.IR = datapath.IR;
+    curr.MAR = datapath.MAR;
+    curr.A = datapath.A;
+    curr.B = datapath.B;
+    curr.PC = datapath.PC;
+    curr.Z = datapath.Z;
+    curr.reg_changed = -1;
+    curr.reg_old_value = 0;
+    curr.mem_changed = -1;
+    curr.mem_old_value = 0;
+
+    stack.push(curr);
+}
+
+function load_state_from_stack() {
+    if(stack.length > 0) {
+        var curr = stack.pop();
+        datapath.state = curr.state;
+        datapath.regno = curr.regno;
+        datapath.func = curr.func;
+        datapath.bus = curr.bus;
+        datapath.IR = curr.IR;
+        datapath.MAR = curr.MAR;
+        datapath.A = curr.A;
+        datapath.B = curr.B;
+        datapath.PC = curr.PC;
+        datapath.Z = curr.Z;
+        if(curr.reg_changed >= 0) {
+            datapath.registers[curr.reg_changed] = curr.reg_old_value;
+        }
+        if(curr.mem_changed >= 0) {
+            datapath.mem[curr.mem_changed] = curr.mem_old_value;
+            update_mem_view(curr.mem_changed);
+        }
+        current_state = MICROCODE[datapath.state];
+    }
+}
+
+const step_time_millis = 300;
 
 function datapath_on_forward_microstate_click(e, editor) {
     if (!disable_stepping) {
+        save_state_to_stack();
         update_state();
         update_datapath_ui();
     }
 }
 
 function datapath_on_back_microstate_click(e, editor) {
-    // todo
+    if (!disable_stepping) {
+        load_state_from_stack();
+        update_datapath_ui();
+    }
 }
 
 function datapath_on_back_click(e, editor) {
-    // todo
+    if (!disable_stepping) {
+        disable_stepping = true;
+        load_state_from_stack();
+        update_datapath_ui();
+        setTimeout(datapath_on_back_click_timeout, step_time_millis);
+    }
+}
+
+function datapath_on_back_click_timeout(e, editor) {
+    if (datapath.state != 0) {
+        load_state_from_stack();
+        update_datapath_ui();
+        setTimeout(datapath_on_back_click_timeout, step_time_millis);
+    } else {
+        disable_stepping = false;
+    }
 }
 
 var disable_stepping = false;
@@ -209,17 +284,19 @@ var disable_stepping = false;
 function datapath_on_forward_click(e, editor) {
     if (!disable_stepping) {
         disable_stepping = true;
+        save_state_to_stack();
         update_state();
         update_datapath_ui();
-        setTimeout(datapath_on_forward_click_timeout, 500);
+        setTimeout(datapath_on_forward_click_timeout, step_time_millis);
     }
 }
 
 function datapath_on_forward_click_timeout(e, editor) {
     if (datapath.state != 0) {
+        save_state_to_stack();
         update_state();
         update_datapath_ui();
-        setTimeout(datapath_on_forward_click_timeout, 500);
+        setTimeout(datapath_on_forward_click_timeout, step_time_millis);
     } else {
         disable_stepping = false;
     }
@@ -230,7 +307,7 @@ function datapath_on_load_click(e, editor) {
     input_contents.id = "datapath_on_load_click_input";
     alert(input_contents.outerHTML, "Enter memory contents", "load", true, function() {
         var input = select("id", "datapath_on_load_click_input").js_object.value;
-        console.log(input);
+        set_memory_s_file(0, input);
     })
 }
 
