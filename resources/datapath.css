@@ -78,8 +78,13 @@
 #datapath_buttons {
     width: 100%;
     margin-top: 10px;
-    position: absolute;
+    position: fixed;
     z-index: 1000;
+    top: 0;
+    left: 0;
+    padding-left: 200px;
+    padding-right: 200px;
+    box-sizing: border-box;
 
 }
 
