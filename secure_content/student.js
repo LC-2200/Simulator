@@ -12,7 +12,7 @@ var datapath = {
     registers: Array.apply(null, new Array(16)).map(Number.prototype.valueOf,0),
     mem: Array.apply(null, new Array(65536)).map(Number.prototype.valueOf,0)
 };
-
+var editor;
 var stack = [];
 
 const MICROCODE = [["FETCH0", 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -308,6 +308,7 @@ function datapath_on_load_click(e, editor) {
     alert(input_contents.outerHTML, "Enter memory contents", "load", true, function() {
         var input = select("id", "datapath_on_load_click_input").js_object.value;
         set_memory_s_file(0, input);
+        updateInstructionView(input);
     })
 }
 
@@ -382,8 +383,9 @@ function set_memory(start, values) {
 }
 
 function on_student_load() {
-    var editor = CodeMirror.fromTextArea(select("id","editor").js_object, {
+    editor = CodeMirror.fromTextArea(select("id","editor").js_object, {
         lineNumbers: true,
+        readOnly: true,
         width: 300,
         theme: "lesser-dark"
     });
@@ -421,4 +423,117 @@ function on_student_load() {
         }
     });
     select("id", "memory").js_object.appendChild(memory_list.container);
+}
+
+function updateInstructionView(hexStrs) {
+    var hexStrSplit = hexStrs.split(" ");
+    var i;
+    for (i = 0; i < hexStrSplit.length; i++){
+        editor.replaceRange(getInstruction(hexStrSplit[i])+"\n", CodeMirror.Pos(editor.lastLine()));
+    }
+}
+
+function getInstruction(hexStr){
+
+    hexStr = hexStr.trim();
+    var opcode = hexStr.charAt(0);
+
+    /*if(hexStr.length != 8) {
+        return "Error: Invalid hex string length";
+    }*/
+
+    var inst = "";
+    var regA = "";
+    var regB = "";
+    var regC = "";
+    var str1 = "";
+    var str2 = "";
+    var str3 = "";
+
+    if (opcode == "7") {
+        return "HALT";
+    } else if (opcode == "A") {
+        return "EI";
+    } else if (opcode == "B") {
+        return "DI";
+    } else if (opcode == "C") {
+        return "RETI";
+    } else {
+
+        regA = hexStr.charAt(1);
+        regB = hexStr.charAt(2);
+
+        if (opcode == "0"){
+            inst = "ADD";
+            regC = hexStr.charAt(7);
+            str1 = regnoToStr(regA);
+            str2 = regnoToStr(regB);
+            str3 = regnoToStr(regC);
+        } else if (opcode == "1") {
+            inst = "NAND";
+            regC = hexStr.charAt(7);
+            str1 = regnoToStr(regA);
+            str2 = regnoToStr(regB);
+            str3 = regnoToStr(regC);
+        } else if (opcode == "2") {
+            inst = "ADDI";
+            str1 = regnoToStr(regA);
+            str2 = regnoToStr(regB);
+            str3 = parseInt(hexStr.substring(3,8),16);
+        } else if (opcode == "3") {
+            inst = "LW";
+            str1 = regnoToStr(regA);
+            str2 = "0x" + parseInt(hexStr.substring(3,8),16).toString(16) + "(" + regnoToStr(regB) + ")";
+        } else if (opcode == "4") {
+            inst = "SW";
+            str1 = regnoToStr(regA);
+            str2 = regnoToStr(regB);
+            str2 = "0x" + parseInt(hexStr.substring(3,8),16).toString(16) + "(" + regnoToStr(regB) + ")";
+        } else if (opcode == "5") {
+            inst = "BEQ";
+            str1 = regnoToStr(regA);
+            str2 = regnoToStr(regB);
+            str3 = parseInt(hexStr.substring(3,8),16);
+        } else if (opcode == "6") {
+            inst = "JALR";
+        }
+    }
+
+    return inst + " " + str1 + ", " + str2 + (str3 === "" ?  "" : ", " + str3);
+}
+
+function regnoToStr(regno) {
+    if (regno == "0") {
+        return "$zero";
+    } else if (regno == "1") {
+        return "$at";
+    } else if (regno == "2") {
+        return "$v0";
+    } else if (regno == "3") {
+        return "$a0";
+    } else if (regno == "4") {
+        return "$a1";
+    } else if (regno == "5") {
+        return "$a2";
+    } else if (regno == "6") {
+        return "$t0";
+    } else if (regno == "7") {
+        return "$t1";
+    } else if (regno == "8") {
+        return "$t2";
+    } else if (regno == "9") {
+        return "$s0";
+    } else if (regno == "A") {
+        return "$s1";
+    } else if (regno == "B") {
+        return "$s2";
+    } else if (regno == "C") {
+        return "$k0";
+    } else if (regno == "D") {
+        return "$sp";
+    } else if (regno == "E") {
+        return "$fp";
+    } else if (regno == "F") {
+        return "$ra";
+    }
 }
