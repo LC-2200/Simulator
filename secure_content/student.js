@@ -389,7 +389,6 @@ function on_student_load() {
         width: 300,
         theme: "lesser-dark"
     });
-    console.log(editor);
 
     select("id","forward_microstate").js_object.addEventListener("click", function(e) {
         datapath_on_forward_microstate_click(e, editor);
@@ -424,6 +423,23 @@ function on_student_load() {
         }
     });
     select("id", "memory").js_object.appendChild(memory_list.container);
+
+    var memory_search_timer;
+    select("id", "memory_search").js_object.addEventListener("keyup", function(e) {
+        if (memory_search_timer != undefined) {
+            clearTimeout(memory_search_timer);
+        }
+
+        if (e.target.value == "0x") {
+            e.target.value = "";
+        } else if (e.target.value.substr(0, 2) != "0x") {
+            e.target.value = "0x" + e.target.value;
+        }
+
+        memory_search_timer = setTimeout(function() {
+            goto_vlist_line(parseInt(e.target.value));
+        }, 500);
+    });
 }
 
 function updateInstructionView(hexStrs) {
@@ -545,4 +561,8 @@ function highlight_line(line_num) {
 
 function remove_line_highlight(line_num) {
     editor.removeLineClass(line_num, 'CodeMirror-activeline-background')
+}
+
+function goto_vlist_line(line_num) {
+    vlist.scrollTop = line_num * 15;
 }
