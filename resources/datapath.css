@@ -52,12 +52,16 @@
     bottom: 0;
     border: none;
     border-left: 1px solid #555;
-    padding: 15px;
+    padding-left: 15px;
     box-sizing: border-box;
 }
 
 #memory div {
     border: none !important;
+}
+
+#vlist {
+    height: 100% !important;
 }
 
 #editor_container {
