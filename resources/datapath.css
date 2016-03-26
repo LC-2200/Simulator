@@ -90,7 +90,7 @@
 
 #editor_container .CodeMirror.cm-s-lesser-dark,
 #editor_container .CodeMirror-scroll .CodeMirror-gutters {
-    height: 100% !important;
+    min-height: 100% !important;
 }
 
 .datapath_button {
