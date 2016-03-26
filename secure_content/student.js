@@ -389,6 +389,7 @@ function on_student_load() {
         width: 300,
         theme: "lesser-dark"
     });
+    console.log(editor);
 
     select("id","forward_microstate").js_object.addEventListener("click", function(e) {
         datapath_on_forward_microstate_click(e, editor);
@@ -536,4 +537,12 @@ function regnoToStr(regno) {
     } else if (regno == "F") {
         return "$ra";
     }
+}
+
+function highlight_line(line_num) {
+    editor.addLineClass(line_num, 'wrap', 'CodeMirror-activeline-background')
+}
+
+function remove_line_highlight(line_num) {
+    editor.removeLineClass(line_num, 'CodeMirror-activeline-background')
 }
