@@ -66,6 +66,10 @@ a {
     transition: 2s;
 }
 
+#welcome_subtext {
+    font-size: 24px;
+}
+
 #login_box {
     background: #555;
     padding: 2px;
