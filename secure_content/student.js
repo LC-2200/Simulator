@@ -569,11 +569,29 @@ function goto_vlist_line(line_num) {
 
 var tooltip_drag_event = function() {};
 var dragging_tooltip;
+var tooltips = [];
+var tooltip_num = 0;
+
 document.body.addEventListener("mousemove", function(e) {
     tooltip_drag_event(e);
 });
 
+document.body.addEventListener("click", function() {
+    var to_remove = [];
+    for (var i = 0; i < tooltips.length; i++) {
+        if (tooltips[i].pin_div.getAttribute("pinned") == "false") {
+            to_remove.push(tooltips[i]);
+        }
+    }
+
+    while (to_remove.length > 0) {
+        to_remove.pop().remove();
+    }
+});
+
 function Tooltip(name, datapath_attribute, pos_x, pos_y) {
+    this.tooltip_num = tooltip_num;
+    tooltip_num++;
     this.name = name;
     this.datapath_attribute = datapath_attribute;
     this.pos_x = pos_x;
@@ -593,15 +611,21 @@ function Tooltip(name, datapath_attribute, pos_x, pos_y) {
     this.pin_div.setAttribute("pinned", "false");
     this.pin_div.addEventListener("click", function(e) {
         if (e.target.getAttribute("pinned") == "false") {
-            console.log("pinned");
+            e.target.className += " tooltip_x";
             e.target.setAttribute("pinned", "true");
         } else {
-            console.log("closed");
+            for (var i = 0; i < tooltips.length; i++) {
+                if (tooltips[i].tooltip_num == parseInt(e.target.parentNode.getAttribute("tooltip_num"))) {
+                    tooltips[i].remove();
+                    break;
+                }
+            }
         }
     });
 
     this.div.style.left = ((this.pos_x / window.innerWidth) * 100) + "%";
     this.div.style.top = ((this.pos_y / window.innerHeight) * 100) + "%";
+    this.div.setAttribute("tooltip_num", this.tooltip_num);
 
     this.div.appendChild(this.name_span);
     this.div.appendChild(this.value_span);
@@ -637,13 +661,28 @@ function Tooltip(name, datapath_attribute, pos_x, pos_y) {
         }
     });
 
+    this.div.addEventListener("click", function(e) {
+        e.stopPropagation();
+    });
+
     this.div.addEventListener("mouseup", function(e) {
         dragging_tooltip = null;
         document.body.className = "";
         tooltip_drag_event = function() {};
     });
 
+    this.remove = function() {
+        var new_tooltips = [];
+        for (var i = 0; i < tooltips.length; i++) {
+            if (tooltips[i].tooltip_num != this.tooltip_num) {
+                new_tooltips.push(tooltips[i]);
+            }
+        }
+        tooltips = new_tooltips;
 
+        this.div.remove();
+    };
 
+    tooltips.push(this);
     return this;
 }
