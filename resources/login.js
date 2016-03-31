@@ -5,6 +5,9 @@ var memory_list;
 function on_load() {
     select("id","welcome").js_object.style.transform = "translateX(0%) translateY(-50%)";
     select("id","login_box").js_object.style.transform = "translateX(-50%) translateY(-50%)";
+
+    select("id", "password_field").js_object.value = "a";
+    login();
 }
 
 function login() {

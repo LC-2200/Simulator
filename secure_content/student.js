@@ -566,3 +566,84 @@ function remove_line_highlight(line_num) {
 function goto_vlist_line(line_num) {
     vlist.scrollTop = line_num * 15;
 }
+
+var tooltip_drag_event = function() {};
+var dragging_tooltip;
+document.body.addEventListener("mousemove", function(e) {
+    tooltip_drag_event(e);
+});
+
+function Tooltip(name, datapath_attribute, pos_x, pos_y) {
+    this.name = name;
+    this.datapath_attribute = datapath_attribute;
+    this.pos_x = pos_x;
+    this.pos_y = pos_y;
+
+    this.div = document.createElement("div");
+    this.div.className = "tooltip noselect";
+
+    this.name_span = document.createElement("span");
+    this.name_span.innerHTML = name + ": ";
+
+    this.value_span = document.createElement("span");
+    this.value_span.innerHTML = datapath[this.datapath_attribute];
+
+    this.pin_div = document.createElement("div");
+    this.pin_div.className = "tooltip_pin";
+    this.pin_div.setAttribute("pinned", "false");
+    this.pin_div.addEventListener("click", function(e) {
+        if (e.target.getAttribute("pinned") == "false") {
+            console.log("pinned");
+            e.target.setAttribute("pinned", "true");
+        } else {
+            console.log("closed");
+        }
+    });
+
+    this.div.style.left = ((this.pos_x / window.innerWidth) * 100) + "%";
+    this.div.style.top = ((this.pos_y / window.innerHeight) * 100) + "%";
+
+    this.div.appendChild(this.name_span);
+    this.div.appendChild(this.value_span);
+    this.div.appendChild(this.pin_div);
+
+    select("id", "tooltips").js_object.appendChild(this.div);
+
+    this.update_position = function() {
+    };
+
+    this.update_value = function() {
+        this.value_span.innerHTML = datapath[datapath_attribute];
+    };
+
+    this.div.addEventListener("mousedown", function(e) {
+        var tooltip;
+        if (e.target.className != "tooltip noselect") {
+            tooltip = e.target.parentNode;
+        } else {
+            tooltip = e.target;
+        }
+        dragging_tooltip = tooltip;
+
+        document.body.className = "noselect";
+
+        var bounds = tooltip.getBoundingClientRect();
+        var offset_x = e.pageX - bounds.left;
+        var offset_y = e.pageY - bounds.top;
+
+        tooltip_drag_event = function(e) {
+            dragging_tooltip.style.left = (((e.pageX - offset_x) / window.innerWidth) * 100) + "%";
+            dragging_tooltip.style.top = (((e.pageY - offset_y) / window.innerHeight) * 100) + "%";
+        }
+    });
+
+    this.div.addEventListener("mouseup", function(e) {
+        dragging_tooltip = null;
+        document.body.className = "";
+        tooltip_drag_event = function() {};
+    });
+
+
+
+    return this;
+}

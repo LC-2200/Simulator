@@ -1,3 +1,30 @@
+#tooltips {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.tooltip {
+    z-index: 1000000;
+    position: fixed;
+    background: #444;
+    padding: 7px 29px 7px 7px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    cursor: move;
+}
+
+.tooltip_pin {
+    background: url(images/pin.png) no-repeat center;
+    background-size: contain;
+    height: 12px;
+    width: 12px;
+    position: absolute;
+    right: 7px;
+    top: 12px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
 #datapath {
     width: 100%;
     background: #262626;
