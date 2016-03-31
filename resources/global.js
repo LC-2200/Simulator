@@ -59,7 +59,9 @@ function select(method, selector) {
 
 function DOM_Object(js_object) {
     this.js_object = js_object;
-    this.classes = this.js_object.className == undefined ? [] : this.js_object.className.split(" ");
+    if (this.className != undefined) {
+        this.classes = this.js_object.className == undefined ? [] : this.js_object.className.split(" ");
+    }
 
     this.add_class = function (class_name) {
         if (this.classes.indexOf(class_name) == -1) {

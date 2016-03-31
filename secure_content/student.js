@@ -414,6 +414,51 @@ function on_student_load() {
         datapath_on_load_click(e, editor);
     });
 
+    select("id", "regno").js_object.addEventListener("click", function(e) {
+        new Tooltip("regno", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "func").js_object.addEventListener("click", function(e) {
+        new Tooltip("func", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "bus").js_object.addEventListener("click", function(e) {
+        new Tooltip("bus", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "ir").js_object.addEventListener("click", function(e) {
+        new Tooltip("IR", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "mar").js_object.addEventListener("click", function(e) {
+        new Tooltip("MAR", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "a").js_object.addEventListener("click", function(e) {
+        new Tooltip("A", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "b").js_object.addEventListener("click", function(e) {
+        new Tooltip("B", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "pc").js_object.addEventListener("click", function(e) {
+        new Tooltip("PC", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
+    select("id", "z").js_object.addEventListener("click", function(e) {
+        new Tooltip("Z", e.pageX, e.pageY);
+        e.stopPropagation();
+    });
+
     memory_list = new VirtualList({
         h: 400,
         itemHeight: 15,
