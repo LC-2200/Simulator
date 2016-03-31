@@ -31,6 +31,10 @@
     background-size: 75%;
 }
 
+.tooltip_value {
+    font-family: monospace;
+}
+
 #datapath {
     width: 100%;
     background: #262626;

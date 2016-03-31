@@ -333,6 +333,10 @@ function update_datapath_ui() {
     select("id", "datapath_b_value").js_object.textContent = to_hex(datapath.B);
     select("id", "datapath_mar_value").js_object.textContent = to_hex(datapath.MAR);
     select("id", "datapath_current_instruction_name").js_object.textContent = current_state[LOOKUP.name];
+
+    for (i = 0; i < tooltips.length; i++) {
+        tooltips[i].update_value();
+    }
 }
 
 function get_mem_value(addr) {
@@ -589,7 +593,9 @@ document.body.addEventListener("click", function() {
     }
 });
 
-function Tooltip(name, datapath_attribute, pos_x, pos_y) {
+function Tooltip(datapath_attribute, pos_x, pos_y, name) {
+    name = name == undefined ? datapath_attribute : name;
+
     this.tooltip_num = tooltip_num;
     tooltip_num++;
     this.name = name;
@@ -604,7 +610,7 @@ function Tooltip(name, datapath_attribute, pos_x, pos_y) {
     this.name_span.innerHTML = name + ": ";
 
     this.value_span = document.createElement("span");
-    this.value_span.innerHTML = datapath[this.datapath_attribute];
+    this.value_span.className = "tooltip_value";
 
     this.pin_div = document.createElement("div");
     this.pin_div.className = "tooltip_pin";
@@ -633,11 +639,8 @@ function Tooltip(name, datapath_attribute, pos_x, pos_y) {
 
     select("id", "tooltips").js_object.appendChild(this.div);
 
-    this.update_position = function() {
-    };
-
     this.update_value = function() {
-        this.value_span.innerHTML = datapath[datapath_attribute];
+        this.value_span.innerHTML = to_hex(datapath[datapath_attribute]);
     };
 
     this.div.addEventListener("mousedown", function(e) {
@@ -684,5 +687,6 @@ function Tooltip(name, datapath_attribute, pos_x, pos_y) {
     };
 
     tooltips.push(this);
+    this.update_value();
     return this;
 }
