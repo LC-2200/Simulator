@@ -323,11 +323,13 @@ function datapath_on_load_click(e, editor) {
     var input_contents = document.createElement("textarea");
     input_contents.id = "datapath_on_load_click_input";
     alert(input_contents.outerHTML, "Enter memory contents", "load", true, function() {
-        var input = select("id", "datapath_on_load_click_input").js_object.value;
+        var input = select("id", "datapath_on_load_click_input").js_object.value.toUpperCase();
         set_memory_s_file(0, input);
+        update_datapath_ui();
         updateInstructionView(input);
     });
 }
+
 
 function update_datapath_ui() {
     set_datapath_element("bus", !(datapath.bus === null));
@@ -404,7 +406,10 @@ function on_student_load() {
         readOnly: true,
         width: 300,
         theme: "lesser-dark",
-        lineWrapping: true
+        lineWrapping: true,
+        lineNumberFormatter: function(n) {
+            return n-1;
+        }
     });
 
     select("id","forward_microstate").js_object.addEventListener("click", function(e) {
