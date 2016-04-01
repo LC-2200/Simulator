@@ -243,7 +243,7 @@ function load_state_from_stack() {
     }
 }
 
-const step_time_millis = 300;
+const step_time_millis = 100;
 
 function datapath_on_forward_microstate_click(e, editor) {
     if (!disable_stepping) {
