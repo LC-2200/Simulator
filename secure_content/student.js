@@ -356,7 +356,7 @@ function get_mem_value(addr) {
 }
 
 function set_datapath_element(elem, activate) {
-    set_datapath_element_color(elem, activate ? 'rgb(54,187,204)' : 'rgb(255,255,255)');
+    set_datapath_element_color(elem, activate ? '#00A63D' : 'rgb(255,255,255)');
 }
 
 function set_datapath_element_color(elem, color) {
