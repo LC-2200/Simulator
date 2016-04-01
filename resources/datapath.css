@@ -75,7 +75,7 @@
     border-bottom: 1px solid #555;
     border-left: 1px solid #555;
     width: 200px;
-    height: 70%;
+    height: 40%;
     position: fixed;
     right: 0;
     top: 0;
@@ -86,7 +86,7 @@
     overflow: hidden;
     font-family: monospace;
     width: 200px;
-    height: 30%;
+    height: 60%;
     position: fixed;
     right: 0;
     bottom: 0;
@@ -99,7 +99,7 @@
 #memory_search {
     position: fixed;
     right: 0;
-    bottom: 30%;
+    bottom: 60%;
     border: 1px solid #555;
     font-family: monospace;
     padding: 5px;

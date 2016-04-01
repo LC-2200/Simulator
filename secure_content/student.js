@@ -13,6 +13,7 @@ var datapath = {
     mem: Array.apply(null, new Array(65536)).map(Number.prototype.valueOf,0)
 };
 var editor;
+var program_loaded = false;
 var stack = [];
 
 const MICROCODE = [["FETCH0", 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -246,6 +247,10 @@ function load_state_from_stack() {
 const step_time_millis = 100;
 
 function datapath_on_forward_microstate_click(e, editor) {
+    /*if (!program_loaded) {
+        alert("A program must be loaded first!", "Oops");
+        return;
+    }*/
     if (!disable_stepping) {
         save_state_to_stack();
         update_state();
@@ -254,6 +259,10 @@ function datapath_on_forward_microstate_click(e, editor) {
 }
 
 function datapath_on_back_microstate_click(e, editor) {
+    /*if (!program_loaded) {
+        alert("A program must be loaded first!", "Oops");
+        return;
+    }*/
     if (!disable_stepping) {
         load_state_from_stack();
         update_datapath_ui();
@@ -261,6 +270,10 @@ function datapath_on_back_microstate_click(e, editor) {
 }
 
 function datapath_on_back_click(e, editor) {
+    /*if (!program_loaded) {
+        alert("A program must be loaded first!", "Oops");
+        return;
+    }*/
     if (!disable_stepping) {
         disable_stepping = true;
         load_state_from_stack();
@@ -282,6 +295,10 @@ function datapath_on_back_click_timeout(e, editor) {
 var disable_stepping = false;
 
 function datapath_on_forward_click(e, editor) {
+    /*if (!program_loaded) {
+        alert("A program must be loaded first!", "Oops");
+        return;
+    }*/
     if (!disable_stepping) {
         disable_stepping = true;
         save_state_to_stack();
@@ -309,7 +326,7 @@ function datapath_on_load_click(e, editor) {
         var input = select("id", "datapath_on_load_click_input").js_object.value;
         set_memory_s_file(0, input);
         updateInstructionView(input);
-    })
+    });
 }
 
 function update_datapath_ui() {
@@ -324,15 +341,8 @@ function update_datapath_ui() {
         select("id", "datapath_register_" + i + "_value").js_object.textContent = to_hex(datapath.registers[i]);
     }
 
-    select("id", "datapath_bus_value").js_object.textContent = to_hex(datapath.bus);
-    select("id", "datapath_regno_value").js_object.textContent = to_hex(datapath.regno);
-    select("id", "datapath_func_value").js_object.textContent = to_hex(datapath.func);
-    select("id", "datapath_pc_value").js_object.textContent = to_hex(datapath.PC);
-    select("id", "datapath_ir_value").js_object.textContent = to_hex(datapath.IR);
-    select("id", "datapath_a_value").js_object.textContent = to_hex(datapath.A);
-    select("id", "datapath_b_value").js_object.textContent = to_hex(datapath.B);
-    select("id", "datapath_mar_value").js_object.textContent = to_hex(datapath.MAR);
-    select("id", "datapath_current_instruction_name").js_object.textContent = current_state[LOOKUP.name];
+
+    select("id", "current_state_value").js_object.textContent = current_state[LOOKUP.name];
 
     for (i = 0; i < tooltips.length; i++) {
         tooltips[i].update_value();
@@ -380,9 +390,11 @@ function set_memory_s_file(start, text) {
 }
 
 function set_memory(start, values) {
+    reset_datapath();
     for(var i = 0; i < values.length; i++) {
         datapath.mem[start + i] = values[i];
     }
+    program_loaded = true;
     update_mem_view(start);
 }
 
