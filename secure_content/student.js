@@ -247,10 +247,10 @@ function load_state_from_stack() {
 const step_time_millis = 100;
 
 function datapath_on_forward_microstate_click(e, editor) {
-    /*if (!program_loaded) {
+    if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
         return;
-    }*/
+    }
     if (!disable_stepping) {
         save_state_to_stack();
         update_state();
@@ -259,10 +259,10 @@ function datapath_on_forward_microstate_click(e, editor) {
 }
 
 function datapath_on_back_microstate_click(e, editor) {
-    /*if (!program_loaded) {
+    if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
         return;
-    }*/
+    }
     if (!disable_stepping) {
         load_state_from_stack();
         update_datapath_ui();
@@ -270,10 +270,10 @@ function datapath_on_back_microstate_click(e, editor) {
 }
 
 function datapath_on_back_click(e, editor) {
-    /*if (!program_loaded) {
+    if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
         return;
-    }*/
+    }
     if (!disable_stepping) {
         disable_stepping = true;
         load_state_from_stack();
@@ -295,10 +295,10 @@ function datapath_on_back_click_timeout(e, editor) {
 var disable_stepping = false;
 
 function datapath_on_forward_click(e, editor) {
-    /*if (!program_loaded) {
+    if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
         return;
-    }*/
+    }
     if (!disable_stepping) {
         disable_stepping = true;
         save_state_to_stack();
