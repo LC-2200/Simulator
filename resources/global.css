@@ -123,6 +123,7 @@ a {
 
 #alert_cancel {
     color: #777;
+    cursor: pointer;
 }
 
 #alert_content {

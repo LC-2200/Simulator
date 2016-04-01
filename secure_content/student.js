@@ -403,7 +403,8 @@ function on_student_load() {
         lineNumbers: true,
         readOnly: true,
         width: 300,
-        theme: "lesser-dark"
+        theme: "lesser-dark",
+        lineWrapping: true
     });
 
     select("id","forward_microstate").js_object.addEventListener("click", function(e) {
