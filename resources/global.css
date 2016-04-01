@@ -121,6 +121,10 @@ a {
     color: #bbb;
 }
 
+#alert_cancel {
+    color: #777;
+}
+
 #alert_content {
     padding: 5px;
     margin-bottom: 10px;

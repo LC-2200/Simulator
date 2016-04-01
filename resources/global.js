@@ -61,6 +61,8 @@ function DOM_Object(js_object) {
     this.js_object = js_object;
     if (this.className != undefined) {
         this.classes = this.js_object.className == undefined ? [] : this.js_object.className.split(" ");
+    } else {
+        this.classes = [];
     }
 
     this.add_class = function (class_name) {
