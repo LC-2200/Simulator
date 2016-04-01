@@ -75,7 +75,7 @@
     border-bottom: 1px solid #555;
     border-left: 1px solid #555;
     width: 200px;
-    height: 40%;
+    height: 270px;
     position: fixed;
     right: 0;
     top: 0;
@@ -86,7 +86,7 @@
     overflow: hidden;
     font-family: monospace;
     width: 200px;
-    height: 60%;
+    height: 100%;
     position: fixed;
     right: 0;
     bottom: 0;
@@ -94,18 +94,20 @@
     border-left: 1px solid #555;
     padding-left: 15px;
     box-sizing: border-box;
+    padding-top: 294px;
 }
 
 #memory_search {
     position: fixed;
     right: 0;
-    bottom: 60%;
+    top: 269px;
     border: 1px solid #555;
     font-family: monospace;
     padding: 5px;
     box-sizing: border-box;
     background: #333;
     width: 200px;
+    z-index: 1000;
 }
 
 #memory div {
