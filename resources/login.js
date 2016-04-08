@@ -1,6 +1,7 @@
 var alert_open = false;
 var logged_in = false;
 var memory_list;
+var password;
 
 function on_load() {
     select("id","welcome").js_object.style.transform = "translateX(0%) translateY(-50%)";
@@ -11,7 +12,7 @@ function on_load() {
 }
 
 function login() {
-    var password = select("id","password_field").js_object.value;
+    password = select("id","password_field").js_object.value;
 
     post("./utilities/login.php", {"password": password}, true, function(result) {
         if (result.status == "fail") {
@@ -20,13 +21,20 @@ function login() {
         }
 
         load_content(result.html, function() {
-            var datapath_scripts = document.createElement("script");
-            datapath_scripts.innerHTML = result.javascript;
-            document.head.appendChild(datapath_scripts);
-
             if (result.status == "student") {
+                var microcode = document.createElement("script");
+                microcode.innerHTML = result.microcode;
+                document.head.appendChild(microcode);
+
+                var datapath_scripts = document.createElement("script");
+                datapath_scripts.innerHTML = result.javascript;
+                document.head.appendChild(datapath_scripts);
                 on_student_load();
             } else {
+                console.log(result);
+                datapath_scripts = document.createElement("script");
+                datapath_scripts.innerHTML = result.javascript;
+                document.head.appendChild(datapath_scripts);
                 on_instructor_load();
             }
         });
