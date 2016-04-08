@@ -142,9 +142,13 @@ function on_instructor_load() {
 
         new_microcode += "[\"HALT\", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];";
 
-        post("./utilities/update_microcode.php", {password: password, microcode: new_microcode}, true, function() {
-            microstates_success = true;
-            final();
+        post("./utilities/update_microcode.php", {password: password, microcode: new_microcode}, true, function(response) {
+            if (response.status == "fail") {
+                alert(response.message, "Error");
+            } else {
+                microstates_success = true;
+                final();
+            }
         });
 
         alert("Saving...");
