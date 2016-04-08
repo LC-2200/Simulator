@@ -15,7 +15,6 @@ var datapath = {
 var editor;
 var program_loaded = false;
 var stack = [];
-var MICROCODE;
 
 const LOOKUP = {
     name: 0,
