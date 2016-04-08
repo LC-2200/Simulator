@@ -8,7 +8,7 @@ $_POST = json_decode($rest_json, true);
 $hashed_token = hash("sha256", $_POST["password"]);
 
 
-if (!preg_match('/MICROCODE\s*=\s*\[(\s*\[((("[A-Z0-9]*")|([0-9]*))*\s*\,?\s*)*\]\s*\,?\s*)*\];/',
+if (!preg_match('/MICROCODE\s?=\s?\[(\s?\[((("[A-Z]{0,20}[0-9]?")|([0-9]{1,2}))\s?\,?\s?){19}\]\s?\,?\s?){30}\];/',
         $_POST["microcode"]) > 0) {
     $response = array(
         "status" => "fail",
