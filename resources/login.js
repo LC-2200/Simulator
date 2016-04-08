@@ -31,7 +31,6 @@ function login() {
                 document.head.appendChild(datapath_scripts);
                 on_student_load();
             } else {
-                console.log(result);
                 datapath_scripts = document.createElement("script");
                 datapath_scripts.innerHTML = result.javascript;
                 document.head.appendChild(datapath_scripts);
