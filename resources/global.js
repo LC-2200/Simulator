@@ -53,12 +53,6 @@ function close_alert() {
     select("id", "content").remove_class("blurred");
 }
 
-// selects a dom element and adds some functionality to the returned result
-// such as add_class and remove_class
-// method can either be "id" or "class"
-// selecting a class will return an array of DOM_objects while an ID will return a single object
-// selector is the class or id name
-
 /**
  * Selects a dom element and adds some functionality to the returned result
  * such as add_class and remove_class. Selecting a class will return an
