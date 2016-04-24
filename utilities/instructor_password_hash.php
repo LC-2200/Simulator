@@ -1,1 +1,2 @@
+<!-- This is the instructor password hash. Manually reset is by computing the sha265 hash of a new password and storing it here -->
 <?php $INSTRUCTOR_PASSWORD_HASH = "df3220d4dc81b476ddf580c09d1e1cd9680bbb7cca04b8c6ffc144591698a391";

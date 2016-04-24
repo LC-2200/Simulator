@@ -8,6 +8,7 @@ $_POST = json_decode($rest_json, true);
 
 $hashed_token = hash("sha256", $_POST["password"]);
 
+// check if the password matches student
 if ($hashed_token == $STUDENT_PASSWORD_HASH) {
     $response = array(
         "status" => "student",
@@ -15,6 +16,7 @@ if ($hashed_token == $STUDENT_PASSWORD_HASH) {
         "javascript" => file_get_contents("../secure_content/student.js"),
         "microcode" => file_get_contents("../secure_content/microcode.js")
     );
+    //check if the password matches instructor
 } else if ($hashed_token == $INSTRUCTOR_PASSWORD_HASH) {
     $response = array(
         "status" => "instructor",
@@ -22,9 +24,11 @@ if ($hashed_token == $STUDENT_PASSWORD_HASH) {
         "javascript" => file_get_contents("../secure_content/instructor.js")
     );
 } else {
+    // fail request
     $response = array(
         "status" => "fail"
     );
 }
 
+// return encoded response
 echo json_encode($response);

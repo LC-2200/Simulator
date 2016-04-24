@@ -2,6 +2,9 @@
 
 include_once "instructor_password_hash.php";
 
+// this is used by the instructor page to change the instructor password
+// as expected, this can only be done after authenticating as the instructor
+
 $rest_json = file_get_contents("php://input");
 $_POST = json_decode($rest_json, true);
 
