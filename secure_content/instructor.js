@@ -3,7 +3,9 @@ var microstates_success = false;
 var update_instructor_password = false;
 var instructor_password_1;
 
-// called by login.js after dom content is loaded
+/**
+ * Called by login.js after dom content is loaded for the instructor view.
+ */
 function on_instructor_load() {
     post("./utilities/get_microcode.php", {password: password}, true, function(response) {
         // password sanity check
@@ -163,8 +165,12 @@ function on_instructor_load() {
     });
 }
 
+/**
+ * Updates the instructor password.
+ * 
+ * This should be done last to avoid authentication conflicts.
+ */
 function final() {
-    // updates the instructor password last to avoid authentication conflicts
     if (student_password_success && microstates_success) {
         if (update_instructor_password) {
             post("./utilities/update_instructor_password.php", {

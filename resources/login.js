@@ -3,13 +3,19 @@ var logged_in = false;
 var memory_list;
 var password;
 
-// animation on load
+/**
+ * Creates the login window animation.
+ *
+ * Called when the page is loaded.
+ */
 function on_load() {
     select("id","welcome").js_object.style.transform = "translateX(0%) translateY(-50%)";
     select("id","login_box").js_object.style.transform = "translateX(-50%) translateY(-50%)";
 }
 
-// called to initiate login process
+/**
+ * Called to initiate the login process.
+ */
 function login() {
     password = select("id","password_field").js_object.value;
 
@@ -40,7 +46,9 @@ function login() {
     });
 }
 
-// binding click events to buttons
+/**
+ * Bind click events to buttons.
+ */
 select("id","button_login").js_object.addEventListener("click", function() {
     login();
 });
@@ -49,7 +57,9 @@ select("id","alert_button").js_object.addEventListener("click", function() {
     close_alert();
 });
 
-// binding key events
+/**
+ * Bind key events.
+ */
 document.addEventListener("keypress", function(e) {
     if (e.keyCode == 13 && !alert_open && !logged_in) {
         login();
@@ -58,9 +68,12 @@ document.addEventListener("keypress", function(e) {
     }
 });
 
-// puts given html content into the main content div with a fade animation
-// content: the html code to place in the content div
-// callback: function to call upon successful addition of the content to the dom
+/**
+ * Puts given html content into the main content div with a fade animation
+ *
+ * @param content the html code to place in the content div
+ * @param callback function to call upon successful addition of the content to the dom
+ */
 function load_content(content, callback) {
     var container = select("id","content").js_object;
     container.setAttribute("class", "transparent");
