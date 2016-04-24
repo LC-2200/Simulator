@@ -55,6 +55,7 @@ function close_alert() {
 // such as add_class and remove_class
 // method can either be "id" or "class"
 // selecting a class will return an array of DOM_objects while an ID will return a single object
+// selector is the class or id name
 function select(method, selector) {
     if (method == "id") {
         var js_object = document.getElementById(selector);
@@ -74,6 +75,7 @@ function select(method, selector) {
 }
 
 // wrapper for a dom object to abstract out common functionality
+// js_object is any default javascript representation of a dom object
 function DOM_Object(js_object) {
     this.js_object = js_object;
     if (this.className != undefined) {

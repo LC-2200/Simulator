@@ -59,6 +59,8 @@ document.addEventListener("keypress", function(e) {
 });
 
 // puts given html content into the main content div with a fade animation
+// content: the html code to place in the content div
+// callback: function to call upon successful addition of the content to the dom
 function load_content(content, callback) {
     var container = select("id","content").js_object;
     container.setAttribute("class", "transparent");
