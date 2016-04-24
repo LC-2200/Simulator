@@ -2,20 +2,23 @@ var datapath = {
     state: 0,
     regno: 0,
     func: 0,
-    bus: 0x00000000,
-    IR: 0x00000000,
-    MAR: 0x00000000,
-    A: 0x00000000,
-    B: 0x00000000,
-    PC: 0x00000000,
+    bus: 0,
+    IR: 0,
+    MAR: 0,
+    A: 0,
+    B: 0,
+    PC: 0,
     Z: 0,
     registers: Array.apply(null, new Array(16)).map(Number.prototype.valueOf,0),
     mem: Array.apply(null, new Array(65536)).map(Number.prototype.valueOf,0)
 };
+
 var editor;
 var program_loaded = false;
-var stack = [];
 
+/**
+ * Translates from an identifier to its column index in the MICROCODE matrix.
+ */
 const LOOKUP = {
     name: 0,
     nextState: 1,
@@ -38,11 +41,26 @@ const LOOKUP = {
     chkZ: 18
 };
 
+/**
+ * Translates from an opcode to its row index in the MICROCODE matrix.
+ */
 const OP_TABLE = [3,6,9,12,16,20,27,29];
+
+/**
+ * Translates from the value of the Z register to the correct rom index in the MICROCODE matrix.
+ */
 const Z_TABLE = [0,24];
 
+/**
+ * Contains the row from the MICROCODE matrix that corresponds to the current state of the datapath.
+ * The current state starts at the first row (FETCH0).
+ */
 var current_state = MICROCODE[0];
+
+
 var last_highlight = 0;
+
+
 
 
 /**
@@ -179,6 +197,29 @@ function update_state() {
     update_memory();
 }
 
+/**
+ * Stores the state objects from save_state_to_stack().
+ * State objects are poped off and used by load_state_from_stack().
+ *
+ * The most recently pushed state object is updated by other functions
+ * if memory or a register is written to. This creates a delta between
+ * the saved state and the active state of the datapath that can then
+ * be reversed.
+ *
+ * Currently, the stack is not limited in size.
+ */
+var stack = [];
+
+/**
+ * Saves the current state of the datapath to a state object and pushes
+ * it onto the stack. This function does not save registers or memory,
+ * but initalizes space for them in the state object should they be
+ * modified.
+ *
+ * NOTE: This function considers the current state to be the state of the
+ * data path before any operations are completed. Therefore, it should be
+ * called before update_state().
+ */
 function save_state_to_stack() {
     var curr = {};
     curr.state = datapath.state;
@@ -195,10 +236,22 @@ function save_state_to_stack() {
     curr.reg_old_value = 0;
     curr.mem_changed = -1;
     curr.mem_old_value = 0;
-
     stack.push(curr);
 }
 
+/**
+ * Loads the most recently saved state object into the datapath
+ * by setting the datapath values to that of the state object and
+ * if a register or memory value was altered, it resores the saved
+ * old value. Finally, the current_state object is set to the
+ * correct row in the MICROCODE matrix.
+ *
+ * If the stack is empty, this function will have no effect.
+ *
+ * NOTE: This function does not update any UI elements directly.
+ * For the effect to be visible, update_datapath_ui() must be called
+ * after this funciton.
+ */
 function load_state_from_stack() {
     if(stack.length > 0) {
         var curr = stack.pop();
@@ -223,8 +276,33 @@ function load_state_from_stack() {
     }
 }
 
+/**
+ * The number of milliseconds between steps by microstate.
+ * Used when steeping by instruction.
+ */
 const step_time_millis = 200;
 
+/**
+ * True if a stepping buttons (back and forward by microstate
+ * and instruction) should be disabled.
+ */
+var disable_stepping = false;
+
+
+/**
+ * Called when the forward by microstate button is clicked.
+ * Saves the current state to the stack, executes the state, and
+ * updates the UI.
+ *
+ * If the program has not been loaded, an error message is shown
+ * and the function exits.
+ *
+ * If the forward  or back by instruction button has been pressed
+ * and is not done stepping, this function will do nothing.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_forward_microstate_click(e, editor) {
     if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
@@ -237,6 +315,19 @@ function datapath_on_forward_microstate_click(e, editor) {
     }
 }
 
+/**
+ * Called when the back by microstate button is clicked.
+ * Loads the previous state from the stack and updates the UI.
+ *
+ * If the program has not been loaded, an error message is shown
+ * and the function exits.
+ *
+ * If the forward or back by instruction button has been pressed
+ * and is not done stepping, this function will do nothing.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_back_microstate_click(e, editor) {
     if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
@@ -248,6 +339,20 @@ function datapath_on_back_microstate_click(e, editor) {
     }
 }
 
+/**
+ * Called when the back by instruction button is clicked.
+ * Loads the previous state from the stack, updates the UI, and calls
+ * datapath_on_back_click_timeout() with a timeout.
+ *
+ * If the program has not been loaded, an error message is shown
+ * and the function exits.
+ *
+ * If the forward or back by instruction button has been pressed
+ * and is not done stepping, this function will do nothing.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_back_click(e, editor) {
     if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
@@ -261,6 +366,14 @@ function datapath_on_back_click(e, editor) {
     }
 }
 
+/**
+ * Loads the previous state from the stack, updates the UI, and calls
+ * datapath_on_back_click_timeout() (itself) with a timeout until
+ * FETCH0 is reached.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_back_click_timeout(e, editor) {
     if (datapath.state != 0) {
         load_state_from_stack();
@@ -271,8 +384,20 @@ function datapath_on_back_click_timeout(e, editor) {
     }
 }
 
-var disable_stepping = false;
-
+/**
+ * Called when the forward by microstate button is clicked.
+ * Saves the current state to the stack, executes the state, updates
+ * the UI, and calls datapath_on_forward_click_timeout() with a timeout.
+ *
+ * If the program has not been loaded, an error message is shown
+ * and the function exits.
+ *
+ * If the forward or back by instruction button has been pressed
+ * and is not done stepping, this function will do nothing.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_forward_click(e, editor) {
     if (!program_loaded) {
         alert("A program must be loaded first!", "Oops");
@@ -287,6 +412,14 @@ function datapath_on_forward_click(e, editor) {
     }
 }
 
+/**
+ * Saves the current state to the stack, executes the state, updates
+ * the UI, and calls datapath_on_forward_click_timeout() with a
+ * timeout until FETCH0 is reached.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_forward_click_timeout(e, editor) {
     if (datapath.state != 0) {
         save_state_to_stack();
@@ -298,6 +431,17 @@ function datapath_on_forward_click_timeout(e, editor) {
     }
 }
 
+/**
+ * Called when the load button is clicked.
+ *
+ * Shows an input field where the user can input assembled code.
+ *
+ * The user input is loaded into memory and the datapath UI and instruction
+ * view are updated to reflect the new memory contents.
+ *
+ * @param e Unused
+ * @param editor Unused
+ */
 function datapath_on_load_click(e, editor) {
     var input_contents = document.createElement("textarea");
     input_contents.id = "datapath_on_load_click_input";
@@ -309,7 +453,10 @@ function datapath_on_load_click(e, editor) {
     });
 }
 
-
+/**
+ * Updates the coloring of the elements of the datapath, the State label, and registers
+ * based on the values of the current_state and datapath.
+ */
 function update_datapath_ui() {
     set_datapath_element("bus", !(datapath.bus === null));
     var datapath_elements = ["drAlu", "drMem", "drOff", "drPc", "drReg", "ldA",
@@ -322,7 +469,6 @@ function update_datapath_ui() {
         select("id", "datapath_register_" + i + "_value").js_object.textContent = to_hex(datapath.registers[i]);
     }
 
-
     select("id", "current_state_value").js_object.textContent = current_state[LOOKUP.name];
 
     for (i = 0; i < tooltips.length; i++) {
@@ -330,14 +476,31 @@ function update_datapath_ui() {
     }
 }
 
+/**
+ * Returns a string representation (hex) of a particular location in memory.
+ * @param addr the location in memory.
+ */
 function get_mem_value(addr) {
     return to_hex(datapath.mem[addr]);
 }
 
-function set_datapath_element(elem, activate) {
-    set_datapath_element_color(elem, activate ? '#00A63D' : 'rgb(255,255,255)');
+/**
+ * Sets a particular datapath element to be active or not in the UI.
+ *
+ * @param elem the datapath element
+ * @param active whether or not this element (signal) is being asserted or not
+ */
+function set_datapath_element(elem, active) {
+    set_datapath_element_color(elem, active ? '#00A63D' : 'rgb(255,255,255)');
 }
 
+/**
+ * Sets the SVG element corresponding to the given datapath element
+ * to the given color.
+ *
+ * @param elem the datapath element
+ * @param color the color to set the SVG element to
+ */
 function set_datapath_element_color(elem, color) {
     var datapath_svg = document.getElementById("datapath_svg");
     var element = datapath_svg.getElementById(elem);
@@ -345,6 +508,15 @@ function set_datapath_element_color(elem, color) {
     element.setAttribute("fill", color);
 }
 
+/**
+ * Helper function that given a number will return a hex string
+ * representation of that number
+ *
+ * If val is null, 0xXXXXXXXX is returned.
+ *
+ * @param val a number.
+ * @returns a hex string representation of val
+ */
 function to_hex(val) {
     if (val == null) {
         return "0xXXXXXXXX";
@@ -356,11 +528,23 @@ function to_hex(val) {
     }
 }
 
+/**
+ * Updates the memory view to show the given memory address near the top of the view.
+ *
+ * @param index the memory address to jump to.
+ */
 function update_mem_view(index) {
     memory_list.container.scrollTop = (memory_list.container.scrollHeight / datapath.mem.length) * (index - 5);
     memory_list._renderChunk(memory_list.container, (index - 15) < 0 ? 0 : index - 15);
 }
 
+/**
+ * Loads a given an LC-2200 32-bit .s file contents into memory
+ * at the given start position.
+ *
+ * @param start the address in memory to start loading values
+ * @param text the contents of the .s file
+ */
 function set_memory_s_file(start, text) {
     var split = text.split(" ");
     var nums = [];
@@ -370,8 +554,13 @@ function set_memory_s_file(start, text) {
     set_memory(start, nums);
 }
 
+/**
+ * Loads numeric values into memory at a starting address.
+ *
+ * @param start the address in memory to start loading values
+ * @param values the values to load into memory
+ */
 function set_memory(start, values) {
-    reset_datapath();
     for(var i = 0; i < values.length; i++) {
         datapath.mem[start + i] = values[i];
     }
@@ -379,6 +568,11 @@ function set_memory(start, values) {
     update_mem_view(start);
 }
 
+/**
+ * Called when the student view is first loaded.
+ *
+ * Sets up all event listeners and views.
+ */
 function on_student_load() {
     editor = CodeMirror.fromTextArea(select("id","editor").js_object, {
         lineNumbers: true,
@@ -488,6 +682,11 @@ function on_student_load() {
     });
 }
 
+/**
+ * Updates the instruction view with the given hex strings.
+ *
+ * @param hexStrs hex strings to be converted and loaded into the instruction view
+ */
 function updateInstructionView(hexStrs) {
     var hexStrSplit = hexStrs.split(" ");
     var i;
@@ -496,6 +695,12 @@ function updateInstructionView(hexStrs) {
     }
 }
 
+/**
+ * Converts a given hex string to its equivalent assembly.
+ *
+ * @param hexStr the hex string to convert
+ * @returns the assembly instruction equivalent.
+ */
 function getInstruction(hexStr){
 
     hexStr = hexStr.trim();
@@ -565,6 +770,12 @@ function getInstruction(hexStr){
     return inst + " " + str1 + ", " + str2 + (str3 === "" ?  "" : ", " + str3);
 }
 
+/**
+ * Returns the ISA name for a given register number.
+ *
+ * @param regno the register number to convert
+ * @returns the ISA name of the given register
+ */
 function regnoToStr(regno) {
     if (regno == "0") {
         return "$zero";
@@ -601,18 +812,43 @@ function regnoToStr(regno) {
     }
 }
 
+/**
+ * Highlights a given line of code in the instruction view.
+ *
+ * NOTE: The first line of code is considered index 0.
+ *
+ * @param line_num the line to highlight
+ */
 function highlight_line(line_num) {
-    editor.addLineClass(line_num - 1, 'wrap', 'CodeMirror-activeline-background')
+    if (line_num > 0) {
+        editor.addLineClass(line_num - 1, 'wrap', 'CodeMirror-activeline-background');
+    }
 }
 
+/**
+ * Removes highlight from a given line of code in the instruction view.
+ *
+ *
+ * @param line_num the line to remove highlighting from
+ */
 function remove_line_highlight(line_num) {
-    editor.removeLineClass(line_num - 1, 'CodeMirror-activeline-background')
+    if (line_num > 0) {
+        editor.removeLineClass(line_num - 1, 'CodeMirror-activeline-background');
+    }
 }
 
+/**
+ * Sets the virtual list (Memory view) to a specific address in memory.
+ *
+ * @param line_num the address to jump to
+ */
 function goto_vlist_line(line_num) {
     vlist.scrollTop = line_num * 15;
 }
 
+/**
+ * Data used to track the dynamic tooltips.
+ */
 var tooltip_drag_event = function() {};
 var dragging_tooltip;
 var tooltips = [];
@@ -635,6 +871,16 @@ document.body.addEventListener("click", function() {
     }
 });
 
+/**
+ * Create a new tooltime at a given x and y coordinate
+ * for a given datapath element.
+ *
+ * @param datapath_attribute the datapath element associated with this tooltip
+ * @param pos_x the x position of the tooltip
+ * @param pos_y the y position of the tooltip
+ * @param name the label of the tooltip
+ * @constructor
+ */
 function Tooltip(datapath_attribute, pos_x, pos_y, name) {
     name = name == undefined ? datapath_attribute : name;
 
