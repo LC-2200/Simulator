@@ -42,7 +42,14 @@ const OP_TABLE = [3,6,9,12,16,20,27,29];
 const Z_TABLE = [0,24];
 
 var current_state = MICROCODE[0];
+var last_highlight = 0;
 
+
+/**
+ * Resets the datapath back to its initial state. Clears out registers
+ * and memory as well as the stack used for stepping backwards.
+ *
+ */
 function reset_datapath() {
     current_state = MICROCODE[0];
     datapath.bus = null;
@@ -122,6 +129,9 @@ function update_state_registers() {
     }
     if (current_state[LOOKUP.ldPc] == 1) {
         datapath.PC = datapath.bus;
+        remove_line_highlight(last_highlight);
+        highlight_line(datapath.PC);
+        last_highlight = datapath.PC;
     }
     if (current_state[LOOKUP.ldZ] == 1) {
         datapath.Z = datapath.bus == 0 ? 1 : 0;
@@ -213,7 +223,7 @@ function load_state_from_stack() {
     }
 }
 
-const step_time_millis = 100;
+const step_time_millis = 200;
 
 function datapath_on_forward_microstate_click(e, editor) {
     if (!program_loaded) {
@@ -592,11 +602,11 @@ function regnoToStr(regno) {
 }
 
 function highlight_line(line_num) {
-    editor.addLineClass(line_num, 'wrap', 'CodeMirror-activeline-background')
+    editor.addLineClass(line_num - 1, 'wrap', 'CodeMirror-activeline-background')
 }
 
 function remove_line_highlight(line_num) {
-    editor.removeLineClass(line_num, 'CodeMirror-activeline-background')
+    editor.removeLineClass(line_num - 1, 'CodeMirror-activeline-background')
 }
 
 function goto_vlist_line(line_num) {
