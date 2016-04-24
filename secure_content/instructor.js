@@ -3,13 +3,16 @@ var microstates_success = false;
 var update_instructor_password = false;
 var instructor_password_1;
 
+// called by login.js after dom content is loaded
 function on_instructor_load() {
     post("./utilities/get_microcode.php", {password: password}, true, function(response) {
+        // password sanity check
         if (response.status == "fail") {
             alert("Invalid password", "Oops!");
             return;
         }
 
+        // recalling the current state of microcode availability
         var instructions = ["ADD", "NAND", "LW", "SW", "ADDI", "JALR", "BEQ"];
         for (var i = 0; i < instructions.length; i++) {
             if (response.microcode.indexOf(instructions[i]) != -1) {
@@ -18,6 +21,7 @@ function on_instructor_load() {
         }
     });
 
+    // binding the save button to the save process
     select("id","options_save").js_object.addEventListener("click", function() {
         var student_password_1 = select("id","student_password_1").js_object.value;
         var student_password_2 = select("id","student_password_2").js_object.value;
@@ -26,6 +30,7 @@ function on_instructor_load() {
 
         var update_student_password = false;
 
+        // input checking:
         if (student_password_1 != "") {
             if (student_password_1 != student_password_2) {
                 alert("Student passwords do not match.", "Oops!");
@@ -56,6 +61,7 @@ function on_instructor_load() {
             student_password_success = true;
         }
 
+        // building new microcode variable based on latest settings
         var new_microcode = "MICROCODE = [[\"FETCH0\", 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], " +
                                          "[\"FETCH1\", 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], " +
                                          "[\"FETCH2\", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 1, 0],";
@@ -142,6 +148,7 @@ function on_instructor_load() {
 
         new_microcode += "[\"HALT\", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];";
 
+        // sending the latest microcode to the server to be fetched by student pages
         post("./utilities/update_microcode.php", {password: password, microcode: new_microcode}, true, function(response) {
             if (response.status == "fail") {
                 alert(response.message, "Error");
@@ -157,6 +164,7 @@ function on_instructor_load() {
 }
 
 function final() {
+    // updates the instructor password last to avoid authentication conflicts
     if (student_password_success && microstates_success) {
         if (update_instructor_password) {
             post("./utilities/update_instructor_password.php", {
