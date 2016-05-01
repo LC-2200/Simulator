@@ -1,2 +1,1 @@
-<!-- This is the student password hash. Manually reset is by computing the sha265 hash of a new password and storing it here --
 <?php $STUDENT_PASSWORD_HASH = "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb";

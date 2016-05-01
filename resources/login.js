@@ -20,6 +20,7 @@ function login() {
     password = select("id","password_field").js_object.value;
 
     post("./utilities/login.php", {"password": password}, true, function(result) {
+        console.log(result);
         if (result.status == "fail") {
             alert("Invalid password", "Oops!");
             return;
@@ -35,12 +36,16 @@ function login() {
                 var datapath_scripts = document.createElement("script");
                 datapath_scripts.innerHTML = result.javascript;
                 document.head.appendChild(datapath_scripts);
-                on_student_load();
+                document.head.onload = function() {
+                    on_student_load();
+                }
             } else {
                 datapath_scripts = document.createElement("script");
                 datapath_scripts.innerHTML = result.javascript;
                 document.head.appendChild(datapath_scripts);
-                on_instructor_load();
+                document.head.onload = function() {
+                    on_instructor_load();
+                }
             }
         });
     });
