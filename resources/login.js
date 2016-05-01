@@ -20,7 +20,6 @@ function login() {
     password = select("id","password_field").js_object.value;
 
     post("./utilities/login.php", {"password": password}, true, function(result) {
-        console.log(result);
         if (result.status == "fail") {
             alert("Invalid password", "Oops!");
             return;
@@ -28,6 +27,7 @@ function login() {
 
         // putting the returned response into the main content div
         load_content(result.html, function() {
+            var interval;
             if (result.status == "student") {
                 var microcode = document.createElement("script");
                 microcode.innerHTML = result.microcode;
@@ -36,16 +36,26 @@ function login() {
                 var datapath_scripts = document.createElement("script");
                 datapath_scripts.innerHTML = result.javascript;
                 document.head.appendChild(datapath_scripts);
-                document.head.onload = function() {
-                    on_student_load();
-                }
+                interval = setInterval(function() {
+                    try {
+                        on_student_load();
+                        clearInterval(interval);
+                    } catch (e) {
+
+                    }
+                }, 100);
             } else {
                 datapath_scripts = document.createElement("script");
                 datapath_scripts.innerHTML = result.javascript;
                 document.head.appendChild(datapath_scripts);
-                document.head.onload = function() {
-                    on_instructor_load();
-                }
+                interval = setInterval(function() {
+                    try {
+                        on_instructor_load();
+                        clearInterval(interval);
+                    } catch (e) {
+
+                    }
+                }, 100);
             }
         });
     });
