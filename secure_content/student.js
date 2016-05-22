@@ -680,6 +680,23 @@ function on_student_load() {
             goto_vlist_line(parseInt(e.target.value));
         }, 500);
     });
+
+    if (location.href.indexOf("?") != -1) {
+        var items = window.location.search.substring(1).split("&");
+        for (var i in items) {
+            if (!items.hasOwnProperty(i)) continue;
+            var item = items[i].split("=");
+            if (item[0] == "program") {
+                var program = item[1].replace(/%20/g, " ");
+
+                set_memory_s_file(0, program);
+                update_datapath_ui();
+                updateInstructionView(program);
+
+                console.log(program);
+            }
+        }
+    }
 }
 
 /**
